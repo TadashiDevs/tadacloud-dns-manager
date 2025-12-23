@@ -1,0 +1,314 @@
+{
+    "name": "tadacloud-dns-manager",
+    "displayName": "TadaCloud DNS Manager",
+    "description": "A Cloudflare extension for your code editor. Manage multiple accounts, migrate domains, and edit DNS records without leaving your editor.",
+    "version": "1.2.0",
+    "publisher": "TadashiDev",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "keywords": [
+        "cloudflare",
+        "dns",
+        "domain",
+        "dns manager",
+        "tadacloud"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "icon": "resources/icons/icono-tadacloudmanager.png",
+    "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "tadacloud-dns-manager",
+                    "title": "TadaCloud DNS Manager",
+                    "icon": "resources/icons/tadacloud.svg"
+                }
+            ]
+        },
+        "views": {
+            "tadacloud-dns-manager": [
+                {
+                    "id": "tadacloud-dns-manager-view",
+                    "name": "DNS Manager",
+                    "icon": "resources/icons/tadacloud.svg"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "tadacloud.addAccount",
+                "title": "Add Account",
+                "category": "TadaCloud",
+                "icon": "$(add)"
+            },
+            {
+                "command": "tadacloud.refreshAll",
+                "title": "Refresh All",
+                "category": "TadaCloud",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "tadacloud.openSettings",
+                "title": "Settings",
+                "category": "TadaCloud",
+                "icon": "$(gear)"
+            },
+            {
+                "command": "tadacloud.renameAccount",
+                "title": "Rename Account",
+                "category": "TadaCloud",
+                "icon": "$(edit)"
+            },
+            {
+                "command": "tadacloud.updateToken",
+                "title": "Update API Token",
+                "category": "TadaCloud",
+                "icon": "$(key)"
+            },
+            {
+                "command": "tadacloud.refreshAccount",
+                "title": "Refresh Domains",
+                "category": "TadaCloud",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "tadacloud.deleteAccount",
+                "title": "Delete Account",
+                "category": "TadaCloud",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "tadacloud.migrateDomain",
+                "title": "Migrate Domain to Cloudflare",
+                "category": "TadaCloud",
+                "icon": "$(globe)"
+            },
+            {
+                "command": "tadacloud.addDnsRecord",
+                "title": "Add DNS Record",
+                "category": "TadaCloud",
+                "icon": "$(add)"
+            },
+            {
+                "command": "tadacloud.refreshZone",
+                "title": "Refresh Records",
+                "category": "TadaCloud",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "tadacloud.openInCloudflare",
+                "title": "Open in Cloudflare",
+                "category": "TadaCloud",
+                "icon": "$(link-external)"
+            },
+            {
+                "command": "tadacloud.copyZoneId",
+                "title": "Copy Zone ID",
+                "category": "TadaCloud",
+                "icon": "$(copy)"
+            },
+            {
+                "command": "tadacloud.editDnsRecord",
+                "title": "Edit Record",
+                "category": "TadaCloud",
+                "icon": "$(edit)"
+            },
+            {
+                "command": "tadacloud.toggleProxy",
+                "title": "Toggle Proxy",
+                "category": "TadaCloud",
+                "icon": "$(cloud)"
+            },
+            {
+                "command": "tadacloud.copyRecordContent",
+                "title": "Copy Content/IP",
+                "category": "TadaCloud",
+                "icon": "$(copy)"
+            },
+            {
+                "command": "tadacloud.deleteDnsRecord",
+                "title": "Delete Record",
+                "category": "TadaCloud",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "tadacloud.dnsChecker",
+                "title": "DNS Checker",
+                "category": "TadaCloud",
+                "icon": "$(search)"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "tadacloud.addAccount",
+                    "when": "view == tadacloud-dns-manager-view",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "tadacloud.refreshAll",
+                    "when": "view == tadacloud-dns-manager-view",
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "tadacloud.openSettings",
+                    "when": "view == tadacloud-dns-manager-view",
+                    "group": "navigation@3"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "tadacloud.renameAccount",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == account",
+                    "group": "1_account@1"
+                },
+                {
+                    "command": "tadacloud.updateToken",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == account",
+                    "group": "1_account@2"
+                },
+                {
+                    "command": "tadacloud.refreshAccount",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == account",
+                    "group": "1_account@3"
+                },
+                {
+                    "command": "tadacloud.migrateDomain",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == account",
+                    "group": "1_account@4"
+                },
+                {
+                    "command": "tadacloud.deleteAccount",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == account",
+                    "group": "2_danger@1"
+                },
+                {
+                    "command": "tadacloud.addDnsRecord",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == zone",
+                    "group": "1_zone@1"
+                },
+                {
+                    "command": "tadacloud.refreshZone",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == zone",
+                    "group": "1_zone@2"
+                },
+                {
+                    "command": "tadacloud.openInCloudflare",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == zone",
+                    "group": "2_external@1"
+                },
+                {
+                    "command": "tadacloud.copyZoneId",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == zone",
+                    "group": "2_external@2"
+                },
+                {
+                    "command": "tadacloud.editDnsRecord",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == dnsRecord",
+                    "group": "1_record@1"
+                },
+                {
+                    "command": "tadacloud.toggleProxy",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == dnsRecord",
+                    "group": "1_record@2"
+                },
+                {
+                    "command": "tadacloud.copyRecordContent",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == dnsRecord",
+                    "group": "1_record@3"
+                },
+                {
+                    "command": "tadacloud.dnsChecker",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == dnsRecord",
+                    "group": "1_record@4"
+                },
+                {
+                    "command": "tadacloud.deleteDnsRecord",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == dnsRecord",
+                    "group": "2_danger@1"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "TadaCloud DNS Manager",
+            "properties": {
+                "tadacloud-dns-manager.defaultTTL": {
+                    "type": "string",
+                    "default": "auto",
+                    "enum": [
+                        "auto",
+                        "60",
+                        "300",
+                        "3600",
+                        "86400"
+                    ],
+                    "enumDescriptions": [
+                        "Automatic TTL",
+                        "1 minute",
+                        "5 minutes",
+                        "1 hour",
+                        "1 day"
+                    ],
+                    "description": "Default TTL for new DNS records"
+                },
+                "tadacloud-dns-manager.defaultProxyEnabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable proxy by default for new DNS records"
+                },
+                "tadacloud-dns-manager.visibleRecordTypes": {
+                    "type": "array",
+                    "default": [
+                        "A",
+                        "AAAA",
+                        "CNAME",
+                        "MX",
+                        "TXT"
+                    ],
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "DNS record types to display in the tree view"
+                },
+                "tadacloud-dns-manager.confirmBeforeDelete": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show confirmation dialog before deleting records"
+                },
+                "tadacloud-dns-manager.showRecordCount": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show DNS record count badge on domains"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "lint": "eslint src --ext ts"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "@types/vscode": "^1.85.0",
+        "@typescript-eslint/eslint-plugin": "^6.13.0",
+        "@typescript-eslint/parser": "^6.13.0",
+        "eslint": "^8.54.0",
+        "typescript": "^5.3.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/TadashiDevs/tadacloud-dns-manager"
+    },
+    "bugs": {
+        "url": "https://github.com/TadashiDevs/tadacloud-dns-manager/issues"
+    },
+    "homepage": "https://github.com/TadashiDevs/tadacloud-dns-manager/blob/main/README.md",
+    "license": "MIT"
+}
