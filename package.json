@@ -2,7 +2,7 @@
     "name": "tadacloud-dns-manager",
     "displayName": "TadaCloud DNS Manager",
     "description": "A Cloudflare extension for your code editor. Manage multiple accounts, migrate domains, and edit DNS records without leaving your editor.",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "publisher": "TadashiDev",
     "engines": {
         "vscode": "^1.85.0"
@@ -15,7 +15,8 @@
         "dns",
         "domain",
         "dns manager",
-        "tadacloud"
+        "tadacloud",
+        "dns checker"
     ],
     "activationEvents": [],
     "main": "./out/extension.js",

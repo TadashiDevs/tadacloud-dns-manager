@@ -198,5 +198,5 @@ If you have any theme requests or issues, please [open an issue](https://github.
 
 ## 📄 License
 
-[MIT](https://github.com/TadashiDevs/tadacloud-dns-manager/blob/main/LICENSE) © [TadashiDevs](https://github.com/TadashiDevs
+[MIT](https://github.com/TadashiDevs/tadacloud-dns-manager/blob/main/LICENSE) © [TadashiDevs](https://github.com/TadashiDevs)
 
