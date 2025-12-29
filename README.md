@@ -21,7 +21,7 @@
   You can find my extensions on the <a href="https://marketplace.visualstudio.com/publishers/TadashiDev">VS Code Marketplace</a> or the <a href="https://open-vsx.org/namespace/TadashiDev">Open VSX</a>
 </p>
 
-## 🆕 What's New in v1.3.0
+## 🆕 What's New in v1.3.1
 
 ### � Team Member Management
 Manage your Cloudflare account team directly from your Code Editor!

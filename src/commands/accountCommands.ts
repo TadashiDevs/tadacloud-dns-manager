@@ -11,8 +11,9 @@ async function showTokenInstructions(): Promise<void> {
         '🔑 How to create a Cloudflare API Token:\n\n' +
         '1. Go to Cloudflare Dashboard → Profile → API Tokens\n' +
         '2. Click "Create Token" → "Create Custom Token"\n' +
-        '3. Set these 3 permissions:\n' +
-        '   • Account → Account Settings → Read\n' +
+        '3. Set these 4 permissions:\n' +
+        '   • Account → Account Settings → Edit\n' +
+        '   • Zone → Zone Settings → Edit\n' +
         '   • Zone → Zone → Edit\n' +
         '   • Zone → DNS → Edit\n' +
         '4. Resources:\n' +
