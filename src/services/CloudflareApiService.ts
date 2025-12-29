@@ -68,7 +68,6 @@ export class CloudflareApiService {
         try {
             // Try to list zones - if this works, the token is valid
             const url = `${CLOUDFLARE_API_BASE}/zones?per_page=1`;
-            console.log('Verifying token by listing zones...');
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -80,18 +79,8 @@ export class CloudflareApiService {
 
             const data = await response.json() as CloudflareResponse<unknown[]>;
 
-            // Log for debugging
-            console.log('Zone list response:', JSON.stringify(data, null, 2));
-
-            if (data.success) {
-                console.log('Token is valid! Found zones:', data.result?.length || 0);
-                return true;
-            } else {
-                console.error('Token verification failed:', data.errors);
-                return false;
-            }
-        } catch (error) {
-            console.error('Token verification error:', error);
+            return data.success;
+        } catch {
             return false;
         }
     }

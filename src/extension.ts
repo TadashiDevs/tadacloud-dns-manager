@@ -18,7 +18,8 @@ import {
     refreshAccount,
     openSettings,
     dnsChecker,
-    migrateDomain
+    migrateDomain,
+    registerMemberCommands
 } from './commands';
 
 let treeDataProvider: CloudflareTreeDataProvider;
@@ -44,6 +45,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register commands
     registerCommands(context);
+
+    // Register member commands
+    registerMemberCommands(context, treeDataProvider);
 
     console.log('TadaCloud DNS Manager commands registered successfully!');
 }

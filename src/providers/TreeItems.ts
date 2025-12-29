@@ -163,4 +163,136 @@ export class EmptyTreeItem extends BaseTreeItem {
     }
 }
 
-export type TreeItemType = AccountTreeItem | ZoneTreeItem | DnsRecordTreeItem | LoadingTreeItem | ErrorTreeItem | EmptyTreeItem;
+/**
+ * Tree item representing the Team Members container
+ */
+export class TeamMembersTreeItem extends BaseTreeItem {
+    public readonly accountId: string;
+    public readonly cloudflareAccountId: string;
+    public readonly memberCount: number;
+
+    constructor(accountId: string, cloudflareAccountId: string, memberCount: number) {
+        super(`Team Members (${memberCount})`, vscode.TreeItemCollapsibleState.Collapsed);
+        this.accountId = accountId;
+        this.cloudflareAccountId = cloudflareAccountId;
+        this.memberCount = memberCount;
+        this.contextValue = 'teamMembers';
+        this.iconPath = new vscode.ThemeIcon('organization');
+        this.tooltip = `${memberCount} team member(s)`;
+    }
+}
+
+/**
+ * Tree item representing a single team member
+ */
+export class MemberTreeItem extends BaseTreeItem {
+    public readonly member: import('../models/Member').Member;
+    public readonly accountId: string;
+    public readonly cloudflareAccountId: string;
+
+    constructor(
+        member: import('../models/Member').Member,
+        accountId: string,
+        cloudflareAccountId: string,
+        zoneMap?: Map<string, string> // zoneId -> zoneName
+    ) {
+        const statusIcon = member.status === 'accepted' ? '✅' :
+            member.status === 'pending' ? '⏳' : '❌';
+        super(member.email, vscode.TreeItemCollapsibleState.None);
+
+        this.member = member;
+        this.accountId = accountId;
+        this.cloudflareAccountId = cloudflareAccountId;
+        this.contextValue = member.status === 'pending' ? 'memberPending' : 'member';
+        this.iconPath = new vscode.ThemeIcon('person');
+
+        // Extract role names from both direct roles AND policies (domain-specific)
+        const roleNames: string[] = [];
+        const scopeZoneIds: string[] = [];
+        let isAccountLevel = false;
+
+        // From direct roles
+        if (member.roles && member.roles.length > 0) {
+            roleNames.push(...member.roles.map(r => r.name));
+            isAccountLevel = true; // Direct roles = account level
+        }
+
+        // From policies (domain-specific access)
+        if (member.policies && member.policies.length > 0) {
+            for (const policy of member.policies) {
+                // Extract roles from permissionGroups
+                if (policy.permissionGroups) {
+                    for (const pg of policy.permissionGroups) {
+                        if (pg.name && !roleNames.includes(pg.name)) {
+                            roleNames.push(pg.name);
+                        }
+                        // Check if this is an account-level role
+                        if (pg.name === 'Super Administrator - All Privileges') {
+                            isAccountLevel = true;
+                        }
+                    }
+                }
+
+                // Extract zone IDs from resourceGroups
+                if (policy.resourceGroups) {
+                    for (const rg of policy.resourceGroups) {
+                        for (const scope of rg.scope || []) {
+                            // Check if it's account-level scope (wildcard or account key)
+                            if (scope.key && scope.key.includes('.account.') && !scope.key.includes('.zone.')) {
+                                isAccountLevel = true;
+                            }
+                            // Extract zone ID
+                            if (scope.zoneId && !scopeZoneIds.includes(scope.zoneId)) {
+                                scopeZoneIds.push(scope.zoneId);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        this.description = `${statusIcon} ${roleNames.join(', ') || 'No roles'}`;
+
+        // Rich tooltip
+        this.tooltip = new vscode.MarkdownString();
+        this.tooltip.appendMarkdown(`**Email:** ${member.email}\n\n`);
+        if (member.firstName || member.lastName) {
+            this.tooltip.appendMarkdown(`**Name:** ${member.firstName || ''} ${member.lastName || ''}\n\n`);
+        }
+        this.tooltip.appendMarkdown(`**Status:** ${member.status} ${statusIcon}\n\n`);
+        this.tooltip.appendMarkdown(`**2FA:** ${member.twoFactorEnabled ? 'Enabled ✅' : 'Disabled ⚪'}\n\n`);
+
+        // Add Scope/Ámbito section
+        this.tooltip.appendMarkdown(`**Scope / Ámbito:**  \n`);
+        if (isAccountLevel && scopeZoneIds.length === 0) {
+            this.tooltip.appendMarkdown(`• All Account (Global) 🌐  \n\n`);
+        } else if (scopeZoneIds.length > 0) {
+            const maxToShow = 5;
+            const zonesToShow = scopeZoneIds.slice(0, maxToShow);
+
+            for (const zoneId of zonesToShow) {
+                const zoneName = zoneMap?.get(zoneId) || zoneId;
+                this.tooltip.appendMarkdown(`• ${zoneName}  \n`);
+            }
+
+            if (scopeZoneIds.length > maxToShow) {
+                const remaining = scopeZoneIds.length - maxToShow;
+                this.tooltip.appendMarkdown(`• *...and ${remaining} more*  \n`);
+            }
+            this.tooltip.appendMarkdown(`\n`);
+        } else {
+            this.tooltip.appendMarkdown(`• Unknown  \n\n`);
+        }
+
+        // Add Roles section
+        if (roleNames.length > 0) {
+            this.tooltip.appendMarkdown(`**Roles:**  \n`);
+            for (const roleName of roleNames) {
+                this.tooltip.appendMarkdown(`• ${roleName}  \n`);
+            }
+        }
+    }
+}
+
+export type TreeItemType = AccountTreeItem | ZoneTreeItem | DnsRecordTreeItem | LoadingTreeItem | ErrorTreeItem | EmptyTreeItem | TeamMembersTreeItem | MemberTreeItem;
+

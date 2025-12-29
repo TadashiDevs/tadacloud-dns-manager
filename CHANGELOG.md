@@ -5,6 +5,79 @@ All notable changes to TadaCloud DNS Manager will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-12-29
+
+### Added
+- **Team Member Management**: Manage your Cloudflare account team directly from VS Code!
+  - **Team Members Node**: New collapsible node under each account showing all team members
+  - **View Members**: See member emails, roles, and status (✅ Active, ⏳ Pending, ❌ Rejected)
+  - **Invite Members**: Invite new members via right-click menu
+    - Support for multiple emails (comma-separated)
+    - Scope selection: "Entire Account" or "Specific Domains"
+    - Domain multi-select when choosing specific domains
+    - Role multi-select (toggle multiple roles on/off)
+    - Choose between sending invitation or adding directly
+  - **Edit Permissions**: Modify member roles via right-click → "Edit Permissions"
+  - **Copy Email**: Quick copy member email to clipboard
+  - **Resend Invitation**: Resend email to pending members
+  - **Remove Member**: Remove members from account with confirmation
+  - **Refresh Members**: Right-click on "Team Members" to refresh the list
+
+- **New Commands**:
+  - `tadacloud.inviteMember`: Invite new team member(s) to account
+  - `tadacloud.editMemberPermissions`: Edit member roles and permissions
+  - `tadacloud.copyMemberEmail`: Copy member email to clipboard
+  - `tadacloud.resendInvitation`: Resend invitation to pending member
+  - `tadacloud.removeMember`: Remove member from account
+  - `tadacloud.refreshMembers`: Refresh team members list
+
+- **Fallback ID System for Reliable Role Assignment**
+  - `ZONE_LEVEL_ROLE_IDS`: 13 zone-level role IDs for domain-specific permissions
+  - `ACCOUNT_LEVEL_ROLE_IDS`: 38+ account-level role IDs for account-wide permissions
+  - IDs extracted via reverse engineering from Cloudflare Dashboard network traffic
+  - Priority Inversion Logic: Hardcoded IDs are checked BEFORE API response
+  - Ensures reliable role assignment even when Cloudflare API returns incorrect IDs
+
+### Fixed
+- **Error 1006 "invalid permission group"** when inviting/editing members
+  - Root cause: Cloudflare's public API returns different Permission Group IDs than the ones required by the Members API
+  - Solution: Implemented fallback system using verified IDs from Cloudflare Dashboard
+
+- **Error 400 "invalid permission group and resource group combination"** for domain-level policies
+  - Root cause: Standard `policies` payload structure is rejected for certain legacy Permission Groups
+  - Solution: Implemented Ad-Hoc scope structure with `meta: { adhoc: "true" }` and concatenated zone ID in scope key
+
+### Changed
+- **API Token Permissions**: Now requires 4 specific permissions for full functionality:
+  - Account → Account Settings → Edit
+  - Zone → Zone Settings → Edit  
+  - Zone → Zone → Edit
+  - Zone → DNS → Edit
+
+- **Payload Structure for Domain Policies**: Now uses Ad-Hoc format:
+  ```json
+  {
+    "resource_groups": [{
+      "meta": { "adhoc": "true" },
+      "scope": {
+        "key": "com.cloudflare.api.account.zone.{ZONE_ID}",
+        "objects": [{ "key": "*" }]
+      }
+    }]
+  }
+  ```
+
+### Security
+- Team member data is fetched securely via Cloudflare API
+- No member data is stored locally
+
+### Technical Notes
+- This release addresses limitations in Cloudflare's public API that affect Free/Pro accounts
+- The internal ID mapping ensures compatibility across all Cloudflare plan types
+- Role selection UI shows appropriate roles based on scope (account vs. domain)
+
+---
+
 ## [1.2.0] - 2025-12-23
 
 ### Added

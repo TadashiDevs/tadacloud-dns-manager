@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { StorageService, CloudflareApiService } from '../services';
-import { Account, Zone, DnsRecord } from '../models';
+import { StorageService, CloudflareApiService, MemberService } from '../services';
+import { Account, Zone, DnsRecord, Member } from '../models';
 import { CONFIG_KEYS } from '../utils';
 import {
     AccountTreeItem,
@@ -9,6 +9,8 @@ import {
     LoadingTreeItem,
     ErrorTreeItem,
     EmptyTreeItem,
+    TeamMembersTreeItem,
+    MemberTreeItem,
     TreeItemType
 } from './TreeItems';
 
@@ -20,11 +22,13 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
     private _onDidChangeTreeData = new vscode.EventEmitter<TreeItemType | undefined | null | void>();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
-    // Cache for zones and records
+    // Cache for zones, records, and members
     private zonesCache: Map<string, Zone[]> = new Map();
     private recordsCache: Map<string, DnsRecord[]> = new Map();
+    private membersCache: Map<string, Member[]> = new Map();
     private loadingAccounts: Set<string> = new Set();
     private loadingZones: Set<string> = new Set();
+    private loadingMembers: Set<string> = new Set();
 
     constructor() { }
 
@@ -34,6 +38,7 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
     public refresh(): void {
         this.zonesCache.clear();
         this.recordsCache.clear();
+        this.membersCache.clear();
         this._onDidChangeTreeData.fire();
     }
 
@@ -42,6 +47,7 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
      */
     public refreshAccount(accountId: string): void {
         this.zonesCache.delete(accountId);
+        this.membersCache.delete(accountId);
         // Clear all records for zones in this account
         for (const key of this.recordsCache.keys()) {
             if (key.startsWith(accountId)) {
@@ -69,7 +75,7 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
             return this.getAccountItems();
         }
 
-        // Account level: show zones
+        // Account level: show zones and team members
         if (element instanceof AccountTreeItem) {
             return this.getZoneItems(element.account);
         }
@@ -77,6 +83,11 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
         // Zone level: show DNS records
         if (element instanceof ZoneTreeItem) {
             return this.getDnsRecordItems(element.zone, element.accountId);
+        }
+
+        // Team Members container: show individual members
+        if (element instanceof TeamMembersTreeItem) {
+            return this.getMemberItems(element.accountId, element.cloudflareAccountId);
         }
 
         return [];
@@ -101,13 +112,19 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
     }
 
     /**
-     * Get zone tree items for an account
+     * Get zone tree items for an account (plus Team Members)
      */
     private async getZoneItems(account: Account): Promise<TreeItemType[]> {
         // Check cache first
         if (this.zonesCache.has(account.id)) {
             const zones = this.zonesCache.get(account.id)!;
-            return zones.map(zone => new ZoneTreeItem(zone, account.id));
+            const zoneItems = zones.map(zone => new ZoneTreeItem(zone, account.id));
+
+            // Add Team Members node
+            const memberCount = this.membersCache.get(account.id)?.length || 0;
+            const teamMembersItem = new TeamMembersTreeItem(account.id, account.cloudflareAccountId, memberCount);
+
+            return [...zoneItems, teamMembersItem];
         }
 
         // Check if already loading
@@ -125,7 +142,7 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
                 return [new ErrorTreeItem('Token not found')];
             }
 
-            const apiService = new CloudflareApiService(accountWithToken.token, account.id);
+            const apiService = new CloudflareApiService(accountWithToken.token, account.cloudflareAccountId);
             const zones = await apiService.getZones();
 
             // Get record counts if enabled
@@ -142,15 +159,34 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
                 }));
             }
 
+            // Try to get member count (don't fail if we can't)
+            let memberCount = 0;
+            try {
+                const memberService = new MemberService(accountWithToken.token, account.cloudflareAccountId);
+                const members = await memberService.getMembers();
+                this.membersCache.set(account.id, members);
+                memberCount = members.length;
+            } catch {
+                // Member loading failed, continue without it
+                memberCount = 0;
+            }
+
             // Cache the zones
             this.zonesCache.set(account.id, zones);
             this.loadingAccounts.delete(account.id);
 
+            const items: TreeItemType[] = [];
+
             if (zones.length === 0) {
-                return [new EmptyTreeItem('No domains found')];
+                items.push(new EmptyTreeItem('No domains found'));
+            } else {
+                items.push(...zones.map(zone => new ZoneTreeItem(zone, account.id)));
             }
 
-            return zones.map(zone => new ZoneTreeItem(zone, account.id));
+            // Always add Team Members node
+            items.push(new TeamMembersTreeItem(account.id, account.cloudflareAccountId, memberCount));
+
+            return items;
         } catch (error) {
             this.loadingAccounts.delete(account.id);
             const message = error instanceof Error ? error.message : 'Failed to load domains';
@@ -200,6 +236,62 @@ export class CloudflareTreeDataProvider implements vscode.TreeDataProvider<TreeI
         } catch (error) {
             this.loadingZones.delete(cacheKey);
             const message = error instanceof Error ? error.message : 'Failed to load records';
+            return [new ErrorTreeItem(message)];
+        }
+    }
+
+    /**
+     * Get member tree items for Team Members container
+     */
+    private async getMemberItems(accountId: string, cloudflareAccountId: string): Promise<TreeItemType[]> {
+        // Create zoneMap from cache for displaying zone names in tooltips
+        const zoneMap = new Map<string, string>();
+        const cachedZones = this.zonesCache.get(accountId);
+        if (cachedZones) {
+            for (const zone of cachedZones) {
+                zoneMap.set(zone.id, zone.name);
+            }
+        }
+
+        // Check cache first
+        if (this.membersCache.has(accountId)) {
+            const members = this.membersCache.get(accountId)!;
+            if (members.length === 0) {
+                return [new EmptyTreeItem('No team members')];
+            }
+            return members.map(member => new MemberTreeItem(member, accountId, cloudflareAccountId, zoneMap));
+        }
+
+        // Check if already loading
+        if (this.loadingMembers.has(accountId)) {
+            return [new LoadingTreeItem()];
+        }
+
+        try {
+            this.loadingMembers.add(accountId);
+
+            const storageService = StorageService.getInstance();
+            const accountWithToken = await storageService.getAccountWithToken(accountId);
+
+            if (!accountWithToken) {
+                return [new ErrorTreeItem('Token not found')];
+            }
+
+            const memberService = new MemberService(accountWithToken.token, cloudflareAccountId);
+            const members = await memberService.getMembers();
+
+            // Cache the members
+            this.membersCache.set(accountId, members);
+            this.loadingMembers.delete(accountId);
+
+            if (members.length === 0) {
+                return [new EmptyTreeItem('No team members')];
+            }
+
+            return members.map(member => new MemberTreeItem(member, accountId, cloudflareAccountId, zoneMap));
+        } catch (error) {
+            this.loadingMembers.delete(accountId);
+            const message = error instanceof Error ? error.message : 'Failed to load members';
             return [new ErrorTreeItem(message)];
         }
     }

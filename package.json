@@ -1,8 +1,8 @@
 {
     "name": "tadacloud-dns-manager",
     "displayName": "TadaCloud DNS Manager",
-    "description": "A Cloudflare extension for your code editor. Manage multiple accounts, migrate domains, and edit DNS records without leaving your editor.",
-    "version": "1.2.1",
+    "description": "A Cloudflare extension for your code editor. Manage multiple accounts, migrate domains, edit DNS records, and manage team members without leaving your editor.",
+    "version": "1.3.0",
     "publisher": "TadashiDev",
     "engines": {
         "vscode": "^1.85.0"
@@ -142,6 +142,42 @@
                 "title": "DNS Checker",
                 "category": "TadaCloud",
                 "icon": "$(search)"
+            },
+            {
+                "command": "tadacloud.inviteMember",
+                "title": "Invite Member",
+                "category": "TadaCloud",
+                "icon": "$(person-add)"
+            },
+            {
+                "command": "tadacloud.editMemberPermissions",
+                "title": "Edit Permissions",
+                "category": "TadaCloud",
+                "icon": "$(edit)"
+            },
+            {
+                "command": "tadacloud.copyMemberEmail",
+                "title": "Copy Email",
+                "category": "TadaCloud",
+                "icon": "$(copy)"
+            },
+            {
+                "command": "tadacloud.resendInvitation",
+                "title": "Resend Invitation",
+                "category": "TadaCloud",
+                "icon": "$(mail)"
+            },
+            {
+                "command": "tadacloud.removeMember",
+                "title": "Remove Member",
+                "category": "TadaCloud",
+                "icon": "$(trash)"
+            },
+            {
+                "command": "tadacloud.refreshMembers",
+                "title": "Refresh Members",
+                "category": "TadaCloud",
+                "icon": "$(refresh)"
             }
         ],
         "menus": {
@@ -231,6 +267,36 @@
                 {
                     "command": "tadacloud.deleteDnsRecord",
                     "when": "view == tadacloud-dns-manager-view && viewItem == dnsRecord",
+                    "group": "2_danger@1"
+                },
+                {
+                    "command": "tadacloud.inviteMember",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == account",
+                    "group": "1_account@5"
+                },
+                {
+                    "command": "tadacloud.refreshMembers",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == teamMembers",
+                    "group": "1_members@1"
+                },
+                {
+                    "command": "tadacloud.editMemberPermissions",
+                    "when": "view == tadacloud-dns-manager-view && (viewItem == member || viewItem == memberPending)",
+                    "group": "1_member@1"
+                },
+                {
+                    "command": "tadacloud.copyMemberEmail",
+                    "when": "view == tadacloud-dns-manager-view && (viewItem == member || viewItem == memberPending)",
+                    "group": "1_member@2"
+                },
+                {
+                    "command": "tadacloud.resendInvitation",
+                    "when": "view == tadacloud-dns-manager-view && viewItem == memberPending",
+                    "group": "1_member@3"
+                },
+                {
+                    "command": "tadacloud.removeMember",
+                    "when": "view == tadacloud-dns-manager-view && (viewItem == member || viewItem == memberPending)",
                     "group": "2_danger@1"
                 }
             ]

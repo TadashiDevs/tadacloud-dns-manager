@@ -5,7 +5,7 @@
 <h1 align="center">TadaCloud DNS Manager</h1>
 
 <p align="center">
-  <strong>A Cloudflare extension for your code editor. Manage multiple accounts, migrate domains, and edit DNS records without leaving your editor.</strong>
+  <strong>A Cloudflare extension for your code editor. Manage multiple accounts, migrate domains, edit DNS records, and manage team members without leaving your editor.</strong>
 </p>
 
 <p align="center">
@@ -21,7 +21,52 @@
   You can find my extensions on the <a href="https://marketplace.visualstudio.com/publishers/TadashiDev">VS Code Marketplace</a> or the <a href="https://open-vsx.org/namespace/TadashiDev">Open VSX</a>
 </p>
 
-## 🆕 What's New in v1.2.0
+## 🆕 What's New in v1.3.0
+
+### � Team Member Management
+Manage your Cloudflare account team directly from your Code Editor!
+- View all team members with their roles and status (✅ Active, ⏳ Pending, ❌ Rejected)
+- Invite new members (single or multiple emails)
+- Choose between entire account or specific domain access
+- Multi-select roles for granular permissions
+- Send invitation or add members directly
+- Edit member permissions
+- Resend pending invitations
+- Remove members from account
+- Copy member emails
+- Refresh members list
+
+### 🔧 Reliable Role Assignment
+- **Fallback ID System**: 50+ role IDs to ensure correct permissions
+- **Priority Logic**: Verified IDs are used over API response for reliability
+- **Ad-Hoc Policies**: Special structure for domain-level permissions
+
+### 🔒 Updated API Token Requirements
+This version requires **4 specific permissions** for full functionality. See [Creating an API Token](#creating-an-api-token) below.
+
+---
+
+### ⚠️ Upgrading from v1.2.x or earlier?
+
+> **IMPORTANT: We strongly recommend creating a NEW API Token instead of editing your existing one.**
+
+Due to significant changes in how permissions are handled internally, editing an existing token may cause conflicts or cached permission issues. A clean token ensures reliable operation.
+
+**Steps to upgrade:**
+
+1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
+2. Click **"Create Token"** → **"Create Custom Token"**
+3. Set the **4 required permissions** (see below)
+4. Copy the new API Token
+5. In your Code Editor, right-click your account → **"Update API Token"**
+6. Paste the new token
+
+**Why a new token?** The member invitation system now uses specific Permission Group IDs that require exact token permissions. A fresh token guarantees these work correctly.
+
+---
+
+<details>
+<summary>📦 Previous Version: v1.2.0</summary>
 
 - **🔒 Cloudflare Account ID**: New required field, encrypted securely like API Token
 - **✅ RDAP Domain Validation**: Verifies domain exists before adding to Cloudflare
@@ -30,21 +75,14 @@
 - **🛠️ DNS Checker Fixes**: Correct propagation status for Proxied (🟠) and CNAME records
 - **🔧 Fixed**: Invalid account identifier errors, input fields staying open
 
-### ⚠️ Upgrading from v1.1.x or earlier?
-
-If you're updating from a previous version, you'll need to:
-
-1. **Delete your existing account** in the extension (right-click → Delete Account)
-2. **Create a new API Token** in Cloudflare with the updated permissions (see instructions below)
-3. **Add the account again** with your Account ID and new API Token
-
-This is required because v1.2.0 now requires your Cloudflare Account ID for adding domains.
+</details>
 
 ## Features
 
 - 🔐 **Multiple Accounts**: Manage multiple Cloudflare accounts securely
 - 🌐 **Domain Management**: View all your domains (zones) in one place
 - 📝 **DNS Records**: Full CRUD operations for DNS records (21 record types supported)
+- 👥 **Team Management**: Invite, edit, and remove team members with role-based access
 - 🟠 **Quick Proxy Toggle**: Toggle Cloudflare proxy with one click
 - 🔍 **DNS Checker**: Check DNS propagation status using Google and Cloudflare DNS
 - ✅ **Domain Validation**: RDAP verification before adding domains
@@ -52,7 +90,7 @@ This is required because v1.2.0 now requires your Cloudflare Account ID for addi
 
 ## Installation
 
-1. Open VS Code
+1. Open your Code Editor
 2. Go to Extensions (`Ctrl+Shift+X`)
 3. Search for "TadaCloud DNS Manager"
 4. Click Install
@@ -70,9 +108,10 @@ This is required because v1.2.0 now requires your Cloudflare Account ID for addi
 🔑 **How to create a Cloudflare API Token:**
 
 1. Go to [Cloudflare Dashboard → Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens)
-2. Click "Create Token" → "Create Custom Token"
-3. Set these **3 permissions**:
-   - **Account → Account Settings → Read**
+2. Click **"Create Token"** → **"Create Custom Token"**
+3. Set these **4 permissions** (Critical for full functionality):
+   - **Account → Account Settings → Edit**
+   - **Zone → Zone Settings → Edit**
    - **Zone → Zone → Edit**
    - **Zone → DNS → Edit**
 4. Resources:
@@ -80,13 +119,14 @@ This is required because v1.2.0 now requires your Cloudflare Account ID for addi
    - Zone Resources: Include → All zones
 5. Client IP Filtering: Leave empty (do not add anything)
 6. TTL: Set Start Date to today and leave End Date empty
-7. Copy your API Token and your Account ID (found on your Dashboard sidebar)
+7. Copy your API Token and your Account ID
+   (Account ID is on the right sidebar of your Dashboard)
 
-🔒 **Security:** Your credentials (API Token and Account ID) are encrypted and stored securely in your OS keychain via VS Code SecretStorage.
+🔒 **Your credentials are encrypted and stored securely in your OS keychain via VS Code SecretStorage.**
 
-**⚠️ Important:** Both API Token and Account ID are required for adding domains.
+⚠️ **Important:** Both API Token and Account ID are required!
 
-**⚠️ Do NOT use Global API Key** - use API Token only!
+⚠️ **Do NOT use Global API Key** - use API Token only!
 
 ### Managing Accounts
 
@@ -95,7 +135,42 @@ Right-click on an account to:
 - 🔑 Update API Token
 - 🔄 Refresh Domains
 - 🌐 Migrate Domain to Cloudflare
+- 👥 Invite Member
 - 🗑️ Delete Account
+
+### Managing Team Members
+
+The **Team Members** node appears under each account and shows all members with their roles and status.
+
+**Inviting Members:**
+1. Right-click on your account → **"Invite Member"**
+2. Enter email addresses (comma-separated for multiple)
+3. Select access scope:
+   - **"Entire Account"** → Member gets account-level access
+   - **"Specific Domains"** → Member only accesses selected domains
+4. If specific domains, select which ones (multi-select)
+5. Select roles (multi-select - toggle on/off)
+6. Choose to send invitation or add directly
+
+**Available Roles:**
+- **Account-level**: Administrator, Analytics, Billing, DNS, Firewall, Workers, Zero Trust, etc.
+- **Domain-level**: Domain DNS, Domain Administrator, Bot Management, Cache Purge, Page Shield, etc.
+
+**Managing Members:**
+
+Right-click on a team member to:
+- ✏️ **Edit Permissions** - Change roles and domain access
+- 📋 **Copy Email** - Copy member email to clipboard
+- 📨 **Resend Invitation** - Resend email to pending members
+- 🗑️ **Remove Member** - Remove from account with confirmation
+
+Right-click on **"Team Members"** node to:
+- 🔄 **Refresh Members** - Update the members list
+
+**Member Status Icons:**
+- ✅ Active member (accepted invitation)
+- ⏳ Pending invitation (waiting for response)
+- ❌ Rejected invitation
 
 ### Migrating a Domain to Cloudflare
 
@@ -184,6 +259,22 @@ Open Settings and search for `tadacloud-dns-manager`:
 - API tokens are stored securely using VS Code's SecretStorage (encrypted)
 - Tokens are never exposed in logs or settings files
 - All communication with Cloudflare uses HTTPS
+
+## Technical Transparency
+
+This extension uses an internal system to ensure reliable member role assignment across all Cloudflare account types:
+
+**Why is this needed?**
+
+Cloudflare's public API sometimes returns Permission Group IDs that are not accepted by the Members API, particularly on Free and Pro accounts. This causes "invalid permission group" errors when inviting members.
+
+**How we solve it:**
+
+- **Fallback ID System**: The extension maintains an internal list of 50+ verified Permission Group IDs, reverse-engineered from the Cloudflare Dashboard
+- **Priority Logic**: Hardcoded IDs are checked before API responses to ensure reliability
+- **Ad-Hoc Policies**: For domain-specific permissions, we use a special "Ad-Hoc" scope structure that matches Cloudflare Dashboard behavior
+
+This is completely transparent and does not modify any Cloudflare settings. It simply ensures that the correct IDs are used when making API requests.
 
 ## Feedback & Support
 
