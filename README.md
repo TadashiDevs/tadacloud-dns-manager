@@ -23,7 +23,7 @@
 
 ## 🆕 What's New in v1.3.1
 
-### � Team Member Management
+### 🛠️ Team Member Management
 Manage your Cloudflare account team directly from your Code Editor!
 - View all team members with their roles and status (✅ Active, ⏳ Pending, ❌ Rejected)
 - Invite new members (single or multiple emails)
@@ -94,6 +94,60 @@ Due to significant changes in how permissions are handled internally, editing an
 2. Go to Extensions (`Ctrl+Shift+X`)
 3. Search for "TadaCloud DNS Manager"
 4. Click Install
+
+---
+
+## 🔐 Linux Security Requirements
+
+<details>
+<summary><strong>🐧 Click here if you're using Linux</strong></summary>
+
+<br>
+
+> **If you encounter the error "An OS keyring couldn't be identified" or extension secrets are not saving, follow these steps:**
+
+### 1️⃣ Install Dependencies
+
+Choose the command for your distribution:
+
+| Distribution | Command |
+|--------------|---------|
+| **Arch Linux / Manjaro** | `sudo pacman -S gnome-keyring libsecret seahorse` |
+| **Debian / Ubuntu / Mint** | `sudo apt install gnome-keyring libsecret-1-0 seahorse` |
+| **Fedora** | `sudo dnf install gnome-keyring libsecret seahorse` |
+
+### 2️⃣ Setup the Keyring (GUI)
+
+1. Open **Seahorse** (search for "Passwords and Keys" in your applications menu)
+2. Click the **`+`** button and select **"Password Keyring"**
+3. Name it exactly: **`Login`**
+4. Right-click on the new "Login" keyring → **"Set as default"**
+5. Ensure the 🔓 padlock icon is **open** (Unlocked)
+
+### 3️⃣ Configure your Editor
+
+You must tell your editor to use the system keyring:
+
+1. Open the **Command Palette** (`Ctrl+Shift+P`)
+2. Type: `Preferences: Configure Runtime Arguments`
+3. This will open `argv.json`
+4. Add the following line (ensure correct JSON commas):
+
+```json
+"password-store": "gnome"
+```
+
+### 4️⃣ Restart your editor completely
+
+Close and reopen your editor for changes to take effect.
+
+---
+
+✅ After completing these steps, your API tokens and credentials will be stored securely in your system keyring.
+
+</details>
+
+---
 
 ## Getting Started
 
