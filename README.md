@@ -40,11 +40,11 @@ Purge Cloudflare cache without leaving your editor!
 
 **Subdomain-Level (Smart Purge):**
 - Right-click any DNS record → "🧹 Purge Subdomain Cache"
-- Purges ONLY the specific subdomain (e.g., `tienda.example.com`)
+- Purges ONLY the specific subdomain (e.g., `prueba.example.com`)
 - Surgical precision - doesn't affect other subdomains or root domain
 
-### � New API Permission Required
-This version requires **5 permissions** for full functionality. See [Creating an API Token](#creating-an-api-token) below.
+### 🔐 New API Permission Required
+This version requires a **new permission** for cache purge features: `Zone → Cache Purge → Purge`. Edit your existing API Token to add this permission.
 
 ---
 
