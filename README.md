@@ -43,50 +43,16 @@ Purge Cloudflare cache without leaving your editor!
 - Purges ONLY the specific subdomain (e.g., `prueba.example.com`)
 - Surgical precision - doesn't affect other subdomains or root domain
 
-### 🔐 New API Permission Required
-This version requires a **new permission** for cache purge features: `Zone → Cache Purge → Purge`. Edit your existing API Token to add this permission.
+### 🔐 New Permission Required
 
----
-
-### ⚠️ Upgrading from v1.3.x or earlier?
-
-> **IMPORTANT: You need to update your API Token to use Cache Purge features.**
-
-v1.4.0 adds a new permission requirement for cache operations.
-
-**Steps to upgrade:**
+To use cache purge features, add this permission to your API Token:
 
 1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
-2. Click **"Edit"** on your existing token, or create a new one
-3. Add the **5th permission**: `Zone → Cache Purge → Purge`
-4. Save and update your token in the extension (right-click account → "Update API Token")
-
-**Why?** Cache purge operations require explicit permission. Without it, you'll see a 403 error (the extension will tell you exactly what's missing).
+2. Click **"Edit"** on your existing token
+3. Add: `Zone → Cache Purge → Purge`
+4. Save and update in extension (right-click account → "Update API Token")
 
 ---
-
-<details>
-<summary>📦 Previous Version: v1.3.1</summary>
-
-- **🛠️ Team Member Management**: Manage Cloudflare team members directly from VS Code
-- **👥 Invite Members**: Single or multiple emails, choose account or domain access
-- **✏️ Edit Permissions**: Modify member roles via right-click
-- **🔧 Fallback ID System**: 50+ role IDs for reliable permission assignment
-- **Ad-Hoc Policies**: Special structure for domain-level permissions
-
-</details>
-
-<details>
-<summary>📦 Previous Version: v1.2.0</summary>
-
-- **🔒 Cloudflare Account ID**: New required field, encrypted securely like API Token
-- **✅ RDAP Domain Validation**: Verifies domain exists before adding to Cloudflare
-- **📋 Cloudflare Plan Selection**: Choose Free, Pro, Business, or Enterprise when adding domains
-- **🔗 Persistent Nameserver Dialog**: Copy nameservers easily without dialog closing
-- **🛠️ DNS Checker Fixes**: Correct propagation status for Proxied (🟠) and CNAME records
-- **🔧 Fixed**: Invalid account identifier errors, input fields staying open
-
-</details>
 
 ## Features
 
