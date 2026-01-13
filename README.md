@@ -21,49 +21,60 @@
   You can find my extensions on the <a href="https://marketplace.visualstudio.com/publishers/TadashiDev">VS Code Marketplace</a> or the <a href="https://open-vsx.org/namespace/TadashiDev">Open VSX</a>
 </p>
 
-## 🆕 What's New in v1.3.1
+## 🆕 What's New in v1.4.0
 
-### 🛠️ Team Member Management
-Manage your Cloudflare account team directly from your Code Editor!
-- View all team members with their roles and status (✅ Active, ⏳ Pending, ❌ Rejected)
-- Invite new members (single or multiple emails)
-- Choose between entire account or specific domain access
-- Multi-select roles for granular permissions
-- Send invitation or add members directly
-- Edit member permissions
-- Resend pending invitations
-- Remove members from account
-- Copy member emails
-- Refresh members list
+### � SSL/TLS Mode Management
+Control your domain's encryption settings directly from your editor!
+- **Set SSL Mode**: Right-click any domain → "Set SSL Mode"
+- **Automatic Mode**: Let Cloudflare manage your SSL (recommended Full)
+- **Custom Modes**: Choose from Full (Strict), Full, Flexible, or Off
+- Current mode is highlighted in the menu
 
-### 🔧 Reliable Role Assignment
-- **Fallback ID System**: 50+ role IDs to ensure correct permissions
-- **Priority Logic**: Verified IDs are used over API response for reliability
-- **Ad-Hoc Policies**: Special structure for domain-level permissions
+### 🧹 Cache Purge (Smart Purge)
+Purge Cloudflare cache without leaving your editor!
 
-### 🔒 Updated API Token Requirements
-This version requires **4 specific permissions** for full functionality. See [Creating an API Token](#creating-an-api-token) below.
+**Domain-Level (Purge Everything):**
+- Right-click any domain → "🧹 Purge Cache (Everything)"
+- Removes ALL cached files for the entire zone
+- Confirmation dialog prevents accidental purges
+
+**Subdomain-Level (Smart Purge):**
+- Right-click any DNS record → "🧹 Purge Subdomain Cache"
+- Purges ONLY the specific subdomain (e.g., `tienda.example.com`)
+- Surgical precision - doesn't affect other subdomains or root domain
+
+### � New API Permission Required
+This version requires **5 permissions** for full functionality. See [Creating an API Token](#creating-an-api-token) below.
 
 ---
 
-### ⚠️ Upgrading from v1.2.x or earlier?
+### ⚠️ Upgrading from v1.3.x or earlier?
 
-> **IMPORTANT: We strongly recommend creating a NEW API Token instead of editing your existing one.**
+> **IMPORTANT: You need to update your API Token to use Cache Purge features.**
 
-Due to significant changes in how permissions are handled internally, editing an existing token may cause conflicts or cached permission issues. A clean token ensures reliable operation.
+v1.4.0 adds a new permission requirement for cache operations.
 
 **Steps to upgrade:**
 
 1. Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
-2. Click **"Create Token"** → **"Create Custom Token"**
-3. Set the **4 required permissions** (see below)
-4. Copy the new API Token
-5. In your Code Editor, right-click your account → **"Update API Token"**
-6. Paste the new token
+2. Click **"Edit"** on your existing token, or create a new one
+3. Add the **5th permission**: `Zone → Cache Purge → Purge`
+4. Save and update your token in the extension (right-click account → "Update API Token")
 
-**Why a new token?** The member invitation system now uses specific Permission Group IDs that require exact token permissions. A fresh token guarantees these work correctly.
+**Why?** Cache purge operations require explicit permission. Without it, you'll see a 403 error (the extension will tell you exactly what's missing).
 
 ---
+
+<details>
+<summary>📦 Previous Version: v1.3.1</summary>
+
+- **🛠️ Team Member Management**: Manage Cloudflare team members directly from VS Code
+- **👥 Invite Members**: Single or multiple emails, choose account or domain access
+- **✏️ Edit Permissions**: Modify member roles via right-click
+- **🔧 Fallback ID System**: 50+ role IDs for reliable permission assignment
+- **Ad-Hoc Policies**: Special structure for domain-level permissions
+
+</details>
 
 <details>
 <summary>📦 Previous Version: v1.2.0</summary>
@@ -83,6 +94,8 @@ Due to significant changes in how permissions are handled internally, editing an
 - 🌐 **Domain Management**: View all your domains (zones) in one place
 - 📝 **DNS Records**: Full CRUD operations for DNS records (21 record types supported)
 - 👥 **Team Management**: Invite, edit, and remove team members with role-based access
+- 🔒 **SSL/TLS Control**: Set encryption mode (Full Strict, Full, Flexible, Off)
+- 🧹 **Cache Purge**: Purge entire domain or specific subdomains
 - 🟠 **Quick Proxy Toggle**: Toggle Cloudflare proxy with one click
 - 🔍 **DNS Checker**: Check DNS propagation status using Google and Cloudflare DNS
 - ✅ **Domain Validation**: RDAP verification before adding domains
@@ -163,11 +176,12 @@ Close and reopen your editor for changes to take effect.
 
 1. Go to [Cloudflare Dashboard → Profile → API Tokens](https://dash.cloudflare.com/profile/api-tokens)
 2. Click **"Create Token"** → **"Create Custom Token"**
-3. Set these **4 permissions** (Critical for full functionality):
+3. Set these **5 permissions** (Critical for full functionality):
    - **Account → Account Settings → Edit**
    - **Zone → Zone Settings → Edit**
    - **Zone → Zone → Edit**
    - **Zone → DNS → Edit**
+   - **Zone → Cache Purge → Purge**
 4. Resources:
    - Account Resources: Include → Your specific account
    - Zone Resources: Include → All zones

@@ -5,7 +5,57 @@ All notable changes to TadaCloud DNS Manager will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-01-12
+
+### Added
+- **SSL/TLS Mode Management**: Control your domain's encryption settings
+  - Right-click any domain → "Set SSL Mode"
+  - **Automatic Mode**: Let Cloudflare manage (recommended Full)
+  - **Custom Modes**: Full (Strict), Full, Flexible, Off
+  - Current mode highlighted in menu
+  - Real-time fetching of current SSL status
+
+- **Cache Purge - Domain Level**: Purge entire zone cache
+  - Right-click any domain → "🧹 Purge Cache (Everything)"
+  - Modal confirmation dialog to prevent accidents
+  - Removes ALL cached content (HTML, CSS, JS, images, etc.)
+  - StatusBar feedback on success
+
+- **Cache Purge - Subdomain Level (Smart Purge)**: Surgical cache clearing
+  - Right-click any DNS record → "🧹 Purge Subdomain Cache"
+  - Uses Cloudflare's `hosts` parameter for precision targeting
+  - Only purges the specific hostname (e.g., `tienda.example.com`)
+  - Does NOT affect other subdomains or root domain
+
+- **New Commands**:
+  - `tadacloud.setSSLMode`: Set SSL/TLS encryption mode
+  - `tadacloud.purgeCacheZone`: Purge all cache for domain
+  - `tadacloud.purgeCacheSubdomain`: Purge cache for specific subdomain
+
+- **Smart Error Handling for 403 Errors**:
+  - Detects missing "Cache Purge" permission
+  - Shows exactly which permission is missing
+  - Direct link to Cloudflare Dashboard to fix
+
+### Changed
+- **API Token Permissions**: Now requires **5 permissions** (added Cache Purge):
+  - Account → Account Settings → Edit
+  - Zone → Zone Settings → Edit
+  - Zone → Zone → Edit
+  - Zone → DNS → Edit
+  - **Zone → Cache Purge → Purge** (NEW)
+
+- Updated token instructions in extension and README
+- Added new keywords: `ssl tls`, `cache purge`
+
+### Security
+- Modal confirmation dialogs prevent accidental cache purges
+- Clear warnings about the impact of each operation
+
+---
+
 ## [1.3.1] - 2025-12-29
+
 
 ### Added
 - **Team Member Management**: Manage your Cloudflare account team directly from VS Code!

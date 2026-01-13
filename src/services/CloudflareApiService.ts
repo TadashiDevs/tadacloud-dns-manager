@@ -385,5 +385,64 @@ export class CloudflareApiService {
             nameServers: result.name_servers || []
         };
     }
+
+    // ==================== SSL/TLS Methods ====================
+
+    /**
+     * Get current SSL/TLS mode for a zone
+     */
+    public async getSSLMode(zoneId: string): Promise<string> {
+        const result = await this.request<{
+            value: string;
+        }>(`/zones/${zoneId}/settings/ssl`);
+
+        return result.value;
+    }
+
+    /**
+     * Set SSL/TLS mode for a zone
+     * @param mode - 'off', 'flexible', 'full', 'strict'
+     */
+    public async setSSLMode(zoneId: string, mode: string): Promise<void> {
+        await this.request<{ value: string }>(`/zones/${zoneId}/settings/ssl`, {
+            method: 'PATCH',
+            body: JSON.stringify({ value: mode })
+        });
+    }
+
+    // ==================== Cache Purge Methods ====================
+
+    /**
+     * Purge all cached content for a zone
+     */
+    public async purgeAllCache(zoneId: string): Promise<void> {
+        await this.request<{ id: string }>(`/zones/${zoneId}/purge_cache`, {
+            method: 'POST',
+            body: JSON.stringify({ purge_everything: true })
+        });
+    }
+
+    /**
+     * Purge cache for specific hosts (subdomains)
+     * This purges ALL content associated with the given hostnames
+     * @param hosts - Array of hostnames to purge (e.g., ["tienda.example.com"])
+     */
+    public async purgeHostCache(zoneId: string, hostname: string): Promise<void> {
+        await this.request<{ id: string }>(`/zones/${zoneId}/purge_cache`, {
+            method: 'POST',
+            body: JSON.stringify({ hosts: [hostname] })
+        });
+    }
+
+    /**
+     * Purge cache for specific URLs
+     * @param urls - Array of specific URLs to purge
+     */
+    public async purgeURLCache(zoneId: string, urls: string[]): Promise<void> {
+        await this.request<{ id: string }>(`/zones/${zoneId}/purge_cache`, {
+            method: 'POST',
+            body: JSON.stringify({ files: urls })
+        });
+    }
 }
 

@@ -11,11 +11,12 @@ async function showTokenInstructions(): Promise<void> {
         '🔑 How to create a Cloudflare API Token:\n\n' +
         '1. Go to Cloudflare Dashboard → Profile → API Tokens\n' +
         '2. Click "Create Token" → "Create Custom Token"\n' +
-        '3. Set these 4 permissions:\n' +
+        '3. Set these 5 permissions:\n' +
         '   • Account → Account Settings → Edit\n' +
         '   • Zone → Zone Settings → Edit\n' +
         '   • Zone → Zone → Edit\n' +
         '   • Zone → DNS → Edit\n' +
+        '   • Zone → Cache Purge → Purge\n' +
         '4. Resources:\n' +
         '   • Account Resources: Include → Your specific account\n' +
         '   • Zone Resources: Include → All zones\n' +
@@ -38,6 +39,7 @@ async function showTokenInstructions(): Promise<void> {
         );
     }
 }
+
 
 /**
  * Command: Add a new Cloudflare account
